@@ -66,6 +66,31 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.currency {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.currency__select {
+  width: 70px;
+  height: 30px;
+}
+
+.currency__label {
+  margin-right: 10px;
+}
+
+.currency__amount {
+  margin-right: 10px;
+}
+
+.currency__input-amount {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #fff;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

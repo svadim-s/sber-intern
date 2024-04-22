@@ -1,76 +1,54 @@
 <script lang="ts">
-  let baseCurrency: string = 'USD'
-  let targetCurrency: string = 'RUB';
-  let baseAmount: number = 0;
-  let targetAmount: number = 0;
+  let targetCurrency: string = 'USD'
+  let convertedCurrency: string = 'RUB';
+  let targetValue: number = 0;
+  let convertedValue: number = 0;
   let currencyRates: Record<string, number> = {}
 
   async function convertCurrency(inputField: string) {
-    const response = await fetch(`https://open.er-api.com/v6/latest/${baseCurrency}`)
-    const data = await response.json();
-    currencyRates = data.rates;
+    const response = await fetch(`https://open.er-api.com/v6/latest/${targetCurrency}`)
+      .then(res => res.json())
+    
+    currencyRates = response.rates;
 
-    if (inputField === 'baseAmount') {
-      targetAmount = baseAmount * currencyRates[targetCurrency];
+    if (inputField === 'targetValue') {
+      convertedValue = targetValue * currencyRates[convertedCurrency];
     } else {
-      baseAmount = targetAmount / currencyRates[targetCurrency];
+      targetValue = convertedValue / currencyRates[convertedCurrency];
     }
 
-    return targetAmount;
+    return convertedValue;
   }
   
-  $: convertCurrency('baseAmount');
-  $: baseCurrency;
-  $: targetCurrency;
+  $: convertCurrency('targetValue');
 </script>
 
 <main>
   <h1>Конвертер валют</h1>
 
-  <section>
-    <div class="currency">
-      <label class="select__currency-label" for="base-currency">Выберите тип валюты:</label>
-      <select class="select__currency" id="base-currency" bind:value={baseCurrency} on:change={() => convertCurrency('baseAmount')}>
-        {#each Object.keys(currencyRates) as currency}
-          <option value={currency}>{currency}</option>
-        {/each}
-      </select>
-  
-      <label class="currency__amount" for="base-amount">Значение:</label>
-      <input type="number" id="base-amount" bind:value={baseAmount} on:input={() => convertCurrency('baseAmount')}>
-    </div>
-  
-    <div class="currency">
-      <label class="select__currency-label" for="target-currency">Выберите тип валюты:</label>
-      <select class="select__currency" id="base-currency" bind:value={targetCurrency} on:change={() => convertCurrency('targetAmount')}>
+  <section class="currency">
+    <div class="currency__item">
+      <label class="currency__label" for="target-currency">Выберите тип валюты:</label>
+      <select class="currency__select" id="target-currency" bind:value={targetCurrency} on:change={() => convertCurrency('convertedValue')}>
         {#each Object.keys(currencyRates) as currency}
           <option value={currency}>{currency}</option>
         {/each}
       </select>
   
       <label class="currency__amount" for="target-amount">Значение:</label>
-      <input type="number" id="target-amount" bind:value={targetAmount} on:input={() => convertCurrency('targetAmount')}>
+      <input class="currency__input-amount" type="number" id="target-amount" bind:value={targetValue} on:input={() => convertCurrency('targetValue')}>
+    </div>
+  
+    <div class="currency__item">
+      <label class="currency__label" for="converted-currency">Выберите тип валюты:</label>
+      <select class="currency__select" id="converted-currency" bind:value={convertedCurrency} on:change={() => convertCurrency('targetValue')}>
+        {#each Object.keys(currencyRates) as currency}
+          <option value={currency}>{currency}</option>
+        {/each}
+      </select>
+  
+      <label class="currency__amount" for="converted-amount">Значение:</label>
+      <input class="currency__input-amount" type="number" id="converted-amount" bind:value={convertedValue} on:input={() => convertCurrency('convertedValue')}>
     </div>
   </section>
 </main>
-
-<style>
-  input {
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #fff;
-  }
-
-  .select__currency {
-    width: 150px;
-    height: 30px;
-  }
-
-  .select__currency-label {
-    margin-right: 10px;
-  }
-
-  .currency__amount {
-    margin-right: 10px;
-  }
-</style>
